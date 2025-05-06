@@ -15,27 +15,59 @@ model = YOLO(yolo_model_path)
 
 def ask_mosaic_pattern():
     import tkinter as tk
+    from tkinter import ttk
     patterns = ["モザイク小", "モザイク中", "モザイク大", "ぼかし", "黒塗り"]
     selected = [patterns[0]]
+    cancelled = [False]
     def on_select(event=None):
         idx = listbox.curselection()
         if idx:
             selected[0] = patterns[idx[0]]
             root.quit()
+    def on_ok():
+        idx = listbox.curselection()
+        if idx:
+            selected[0] = patterns[idx[0]]
+        root.quit()
+    def on_cancel():
+        cancelled[0] = True
+        root.quit()
     root = tk.Tk()
     root.title("モザイクパターン選択")
-    root.geometry("400x300")  # ウィンドウサイズを大きく
-    tk.Label(root, text="モザイクパターンを選択してください", font=("Meiryo", 16)).pack(padx=10, pady=20)
-    listbox = tk.Listbox(root, height=len(patterns), font=("Meiryo", 16))
+    root.geometry("420x360")
+    root.configure(bg="#23272e")
+    # スタイル設定
+    style = ttk.Style(root)
+    style.theme_use("clam")
+    style.configure("TButton", font=("Segoe UI", 13), padding=8, relief="flat", background="#2d313a", foreground="#fff")
+    style.map("TButton",
+        background=[("active", "#3a3f4b")],
+        foreground=[("active", "#00bfff")])
+    style.configure("TFrame", background="#23272e")
+    style.configure("TLabel", background="#23272e", foreground="#fff", font=("Segoe UI", 15))
+    # タイトル
+    title = ttk.Label(root, text="モザイクパターンを選択してください", font=("Segoe UI", 17, "bold"))
+    title.pack(padx=10, pady=18)
+    # リストボックス
+    listbox_frame = ttk.Frame(root)
+    listbox_frame.pack(padx=24, pady=8, fill=tk.BOTH, expand=True)
+    listbox = tk.Listbox(listbox_frame, height=len(patterns), font=("Segoe UI", 15), bg="#181a20", fg="#fff", selectbackground="#00bfff", selectforeground="#fff", relief="flat", highlightthickness=0, bd=0)
     for p in patterns:
         listbox.insert(tk.END, p)
     listbox.selection_set(0)
-    listbox.pack(padx=20, pady=20, fill=tk.BOTH, expand=True)
+    listbox.pack(fill=tk.BOTH, expand=True)
     listbox.bind('<Double-1>', on_select)
-    btn = tk.Button(root, text="OK", font=("Meiryo", 14), width=10, height=2, command=on_select)
-    btn.pack(pady=10)
+    # ボタン
+    btn_frame = ttk.Frame(root)
+    btn_frame.pack(pady=18)
+    btn_ok = ttk.Button(btn_frame, text="OK", command=on_ok)
+    btn_ok.pack(side=tk.LEFT, padx=16)
+    btn_cancel = ttk.Button(btn_frame, text="キャンセル", command=on_cancel)
+    btn_cancel.pack(side=tk.LEFT, padx=16)
     root.mainloop()
     root.destroy()
+    if cancelled[0]:
+        return None
     return selected[0]
 
 def apply_pattern(region, pattern):
@@ -97,6 +129,8 @@ def auto_apply_mosaic(image, pattern):
     return image
 
 def main():
+    import tkinter.messagebox as tkMessageBox
+    from tkinter import ttk
     # 引数がなければGUIでフォルダ選択
     if len(sys.argv) == 1:
         root = tk.Tk()
@@ -121,11 +155,40 @@ def main():
         print("画像ファイルが見つかりません")
         sys.exit(1)
     pattern = ask_mosaic_pattern()
+    if pattern is None:
+        print("キャンセルされました。処理を中止します。")
+        return
     out_folder_created = False
-    for fname in files:
+
+    # --- 進捗バー用ウィンドウ ---
+    progress_root = tk.Tk()
+    progress_root.title("モザイク処理進捗")
+    progress_root.geometry("420x170")
+    progress_root.configure(bg="#23272e")
+    style = ttk.Style(progress_root)
+    style.theme_use("clam")
+    style.configure("TLabel", background="#23272e", foreground="#fff", font=("Segoe UI", 14))
+    style.configure("TFrame", background="#23272e")
+    style.configure("custom.Horizontal.TProgressbar", troughcolor="#181a20", bordercolor="#23272e", background="#00bfff", lightcolor="#00bfff", darkcolor="#00bfff", thickness=18)
+    # タイトル
+    ttk.Label(progress_root, text="画像を処理中...", font=("Segoe UI", 15, "bold")).pack(pady=12)
+    progress_var = tk.DoubleVar()
+    progress = ttk.Progressbar(progress_root, variable=progress_var, maximum=len(files), length=360, style="custom.Horizontal.TProgressbar")
+    progress.pack(pady=6)
+    status_label = ttk.Label(progress_root, text="", font=("Segoe UI", 12))
+    status_label.pack(pady=2)
+    percent_label = ttk.Label(progress_root, text="", font=("Segoe UI", 12))
+    percent_label.pack(pady=2)
+    progress_root.update()
+
+    for idx, fname in enumerate(files, 1):
         in_path = os.path.join(folder, fname)
         out_path = os.path.join(out_folder, fname)
-        print(f"処理中: {in_path}")
+        status_label.config(text=f"{fname} ({idx}/{len(files)})")
+        percent = int(idx / len(files) * 100)
+        percent_label.config(text=f"進捗: {percent}%")
+        progress_var.set(idx-1)
+        progress_root.update()
         try:
             img = Image.open(in_path).convert("RGB")
             img = auto_apply_mosaic(img, pattern)
@@ -133,10 +196,14 @@ def main():
                 os.makedirs(out_folder, exist_ok=True)
                 out_folder_created = True
             img.save(out_path)
-            print(f"保存: {out_path}")
         except Exception as e:
             print(f"エラー: {fname}: {e}")
-    print("全ての画像の処理が完了しました。")
+    progress_var.set(len(files))
+    status_label.config(text="完了")
+    percent_label.config(text="進捗: 100%")
+    progress_root.update()
+    tkMessageBox.showinfo("完了", "全ての画像の処理が完了しました。", parent=progress_root)
+    progress_root.destroy()
 
 if __name__ == "__main__":
     main()
