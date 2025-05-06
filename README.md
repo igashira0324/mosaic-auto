@@ -65,6 +65,13 @@ flowchart TD
 - make_love, nippleクラスは自動処理対象から除外されます
 - モザイク範囲や強度はapply_pattern関数で調整可能です
 
+## ライセンス
+
+本ツールはオープンソースです。
+- メインスクリプト・バッチファイル等はAGPL-3.0ライセンスに従います。
+- yolov5/配下のコードは[Ultralytics YOLOv5公式](https://github.com/ultralytics/yolov5)のAGPL-3.0ライセンスです。詳細は[yolov5/LICENSE](yolov5/LICENSE)をご参照ください。
+- erax_nsfw_yolo11m.pt（NSFW検出モデル）は[EraX-NSFW-V1.0（HuggingFace）](https://huggingface.co/erax-ai/EraX-NSFW-V1.0)の利用条件に従ってください。
+
 ## 参考リンク
 
 - EraX-NSFW-V1.0モデル: https://huggingface.co/erax-ai/EraX-NSFW-V1.0
