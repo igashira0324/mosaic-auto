@@ -13,15 +13,24 @@
 
 ## 必要な環境
 
+- Windows 11
 - Python 3.8 以上
-- Windows（バッチファイル利用時）
 - pipでrequirements.txtの内容をインストール
 
 ## インストール方法
 
-1. 必要なファイル・フォルダを同じディレクトリに配置
-2. コマンドプロンプトで以下を実行
+1. コード一式をクローンします。
+   ```sh
+   git clone https://github.com/igashira0324/mosaic-auto.git
+   cd mosaic-auto
+   ```
+2. モデルファイルをダウンロードします。
+   - [erax_nsfw_yolo11m.pt (HuggingFace)](https://huggingface.co/erax-ai/EraX-NSFW-V1.0) よりダウンロードし、クローンしたディレクトリ直下に配置してください。
+   - yolov5/ ディレクトリはリポジトリに含まれています。
+3. 依存パッケージをインストールします。
+   ```sh
    pip install -r requirements.txt
+   ```
    ※ PyTorchのインストールでエラーが出る場合は[PyTorch公式サイト](https://pytorch.org/get-started/locally/)も参照してください。
 
 ## 使い方

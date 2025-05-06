@@ -32,24 +32,19 @@ def ask_mosaic_pattern():
     def on_cancel():
         cancelled[0] = True
         root.quit()
+    def on_enter(e):
+        e.widget.config(bg="#00bfff", fg="#fff", relief="raised", bd=3)
+    def on_leave(e):
+        e.widget.config(bg="#23272e", fg="#fff", relief="raised", bd=3)
     root = tk.Tk()
     root.title("モザイクパターン選択")
     root.geometry("420x360")
     root.configure(bg="#23272e")
-    # スタイル設定
-    style = ttk.Style(root)
-    style.theme_use("clam")
-    style.configure("TButton", font=("Segoe UI", 13), padding=8, relief="flat", background="#2d313a", foreground="#fff")
-    style.map("TButton",
-        background=[("active", "#3a3f4b")],
-        foreground=[("active", "#00bfff")])
-    style.configure("TFrame", background="#23272e")
-    style.configure("TLabel", background="#23272e", foreground="#fff", font=("Segoe UI", 15))
     # タイトル
-    title = ttk.Label(root, text="モザイクパターンを選択してください", font=("Segoe UI", 17, "bold"))
+    title = tk.Label(root, text="モザイクパターンを選択してください", font=("Segoe UI", 17, "bold"), bg="#23272e", fg="#fff")
     title.pack(padx=10, pady=18)
     # リストボックス
-    listbox_frame = ttk.Frame(root)
+    listbox_frame = tk.Frame(root, bg="#23272e")
     listbox_frame.pack(padx=24, pady=8, fill=tk.BOTH, expand=True)
     listbox = tk.Listbox(listbox_frame, height=len(patterns), font=("Segoe UI", 15), bg="#181a20", fg="#fff", selectbackground="#00bfff", selectforeground="#fff", relief="flat", highlightthickness=0, bd=0)
     for p in patterns:
@@ -58,12 +53,16 @@ def ask_mosaic_pattern():
     listbox.pack(fill=tk.BOTH, expand=True)
     listbox.bind('<Double-1>', on_select)
     # ボタン
-    btn_frame = ttk.Frame(root)
+    btn_frame = tk.Frame(root, bg="#23272e")
     btn_frame.pack(pady=18)
-    btn_ok = ttk.Button(btn_frame, text="OK", command=on_ok)
+    btn_ok = tk.Button(btn_frame, text="OK", font=("Segoe UI", 14), width=10, height=2, bg="#23272e", fg="#fff", relief="raised", bd=3, activebackground="#00bfff", activeforeground="#fff", command=on_ok)
     btn_ok.pack(side=tk.LEFT, padx=16)
-    btn_cancel = ttk.Button(btn_frame, text="キャンセル", command=on_cancel)
+    btn_ok.bind("<Enter>", on_enter)
+    btn_ok.bind("<Leave>", on_leave)
+    btn_cancel = tk.Button(btn_frame, text="キャンセル", font=("Segoe UI", 14), width=10, height=2, bg="#23272e", fg="#fff", relief="raised", bd=3, activebackground="#ff5555", activeforeground="#fff", command=on_cancel)
     btn_cancel.pack(side=tk.LEFT, padx=16)
+    btn_cancel.bind("<Enter>", on_enter)
+    btn_cancel.bind("<Leave>", on_leave)
     root.mainloop()
     root.destroy()
     if cancelled[0]:
@@ -163,21 +162,26 @@ def main():
     # --- 進捗バー用ウィンドウ ---
     progress_root = tk.Tk()
     progress_root.title("モザイク処理進捗")
-    progress_root.geometry("420x170")
+    progress_root.geometry("440x190")
     progress_root.configure(bg="#23272e")
     style = ttk.Style(progress_root)
     style.theme_use("clam")
     style.configure("TLabel", background="#23272e", foreground="#fff", font=("Segoe UI", 14))
     style.configure("TFrame", background="#23272e")
-    style.configure("custom.Horizontal.TProgressbar", troughcolor="#181a20", bordercolor="#23272e", background="#00bfff", lightcolor="#00bfff", darkcolor="#00bfff", thickness=18)
+    # かっこいいグラデーション風プログレスバー
+    style.layout("Cool.Horizontal.TProgressbar",
+        [('Horizontal.Progressbar.trough', {'children': [
+            ('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})], 'sticky': 'nswe'})])
+    style.configure("Cool.Horizontal.TProgressbar",
+        troughcolor="#181a20", bordercolor="#23272e", background="#00bfff", lightcolor="#00bfff", darkcolor="#005f8f", thickness=22, borderwidth=2, relief="flat")
     # タイトル
-    ttk.Label(progress_root, text="画像を処理中...", font=("Segoe UI", 15, "bold")).pack(pady=12)
+    tk.Label(progress_root, text="画像を処理中...", font=("Segoe UI", 15, "bold"), bg="#23272e", fg="#fff").pack(pady=12)
     progress_var = tk.DoubleVar()
-    progress = ttk.Progressbar(progress_root, variable=progress_var, maximum=len(files), length=360, style="custom.Horizontal.TProgressbar")
-    progress.pack(pady=6)
-    status_label = ttk.Label(progress_root, text="", font=("Segoe UI", 12))
+    progress = ttk.Progressbar(progress_root, variable=progress_var, maximum=len(files), length=380, style="Cool.Horizontal.TProgressbar")
+    progress.pack(pady=8)
+    status_label = tk.Label(progress_root, text="", font=("Segoe UI", 12), bg="#23272e", fg="#fff")
     status_label.pack(pady=2)
-    percent_label = ttk.Label(progress_root, text="", font=("Segoe UI", 12))
+    percent_label = tk.Label(progress_root, text="", font=("Segoe UI", 12), bg="#23272e", fg="#fff")
     percent_label.pack(pady=2)
     progress_root.update()
 
