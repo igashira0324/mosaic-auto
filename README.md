@@ -38,6 +38,25 @@ python mosaic-auto.py <画像フォルダのパス>
 
 - フォルダパスを省略すると、GUIでフォルダ選択ダイアログが表示されます
 
+## 処理フロー
+
+```mermaid
+flowchart TD
+    Start([開始])
+    SelectPattern[/"モザイクパターン選択ダイアログ"/]
+    SelectFolder[/"画像フォルダ選択ダイアログ"/]
+    ForEach[画像ごとに処理]
+    Detect[YOLOでNSFW領域検出]
+    Apply[Mosaic/Blur/Blackout適用]
+    Save[新フォルダに保存]
+    End([完了])
+
+    Start --> SelectPattern --> SelectFolder --> ForEach
+    ForEach --> Detect --> Apply --> Save
+    Save --> ForEach
+    ForEach --> End
+```
+
 ## 注意事項
 
 - モデルファイル（erax_nsfw_yolo11m.pt）は同じフォルダに必要です
