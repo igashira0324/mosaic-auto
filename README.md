@@ -6,8 +6,8 @@
 
 - mosaic-auto.py … メインの自動モザイクスクリプト
 - nfsw-mosaic-auto.bat … Windows用バッチファイル（ダブルクリックで実行）
-- erax_nsfw_yolo11m.pt … NSFW検出YOLOモデル（同じフォルダに配置）
-- yolov5/ … YOLOv5のコード一式（サブフォルダ）
+- erax_nsfw_yolo11m.pt … NSFW検出YOLOモデル（[EraX-NSFW-V1.0（HuggingFace）](https://huggingface.co/erax-ai/EraX-NSFW-V1.0) からダウンロード）
+- yolov5/ … YOLOv5のコード一式（[Ultralytics YOLOv5公式](https://github.com/ultralytics/yolov5)）
 - requirements.txt … 必要なPythonパッケージ
 - README.md … この説明書
 
@@ -22,6 +22,7 @@
 1. 必要なファイル・フォルダを同じディレクトリに配置
 2. コマンドプロンプトで以下を実行
    pip install -r requirements.txt
+   ※ PyTorchのインストールでエラーが出る場合は[PyTorch公式サイト](https://pytorch.org/get-started/locally/)も参照してください。
 
 ## 使い方
 
@@ -43,8 +44,8 @@ python mosaic-auto.py <画像フォルダのパス>
 ```mermaid
 flowchart TD
     Start([開始])
-    SelectPattern[/"モザイクパターン選択ダイアログ"/]
-    SelectFolder[/"画像フォルダ選択ダイアログ"/]
+    SelectPattern["モザイクパターン選択ダイアログ"]
+    SelectFolder["画像フォルダ選択ダイアログ"]
     ForEach[画像ごとに処理]
     Detect[YOLOでNSFW領域検出]
     Apply[Mosaic/Blur/Blackout適用]
@@ -63,3 +64,10 @@ flowchart TD
 - yolov5/ フォルダも同じ階層に必要です
 - make_love, nippleクラスは自動処理対象から除外されます
 - モザイク範囲や強度はapply_pattern関数で調整可能です
+
+## 参考リンク
+
+- EraX-NSFW-V1.0モデル: https://huggingface.co/erax-ai/EraX-NSFW-V1.0
+- YOLOv5公式: https://github.com/ultralytics/yolov5
+- Ultralytics YOLOドキュメント: https://docs.ultralytics.com/
+- PyTorch公式: https://pytorch.org/get-started/locally/
