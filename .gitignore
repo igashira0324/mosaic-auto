@@ -1,0 +1,6 @@
+# 除外するファイル・フォルダ
+venv/
+my-github-batch-project/
+ori/
+*.pyc
+__pycache__/
