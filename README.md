@@ -4,18 +4,14 @@
 
 ## 必要なファイル・フォルダ
 
-- mosaic-auto.py … メインの自動モザイクスクリプト
-- nfsw-mosaic-auto.bat … Windows用バッチファイル（ダブルクリックで実行）
+- mosaic-image.py … 画像用の自動モザイクスクリプト
+- mosaic-video.py … 動画用の自動モザイクスクリプト（mp4/avi/mov対応）
+- nsfw-mosaic-image.bat … 画像用バッチファイル（ダブルクリックで実行）
+- nsfw-mosaic-video.bat … 動画用バッチファイル（ダブルクリックで実行）
 - erax_nsfw_yolo11m.pt … NSFW検出YOLOモデル（[EraX-NSFW-V1.0（HuggingFace）](https://huggingface.co/erax-ai/EraX-NSFW-V1.0) からダウンロード）
 - yolov5/ … YOLOv5のコード一式（[Ultralytics YOLOv5公式](https://github.com/ultralytics/yolov5)）
 - requirements.txt … 必要なPythonパッケージ
 - README.md … この説明書
-
-## 必要な環境
-
-- Windows 11
-- Python 3.8 以上
-- pipでrequirements.txtの内容をインストール
 
 ## インストール方法
 
@@ -35,37 +31,24 @@
 
 ## 使い方
 
-### 1. バッチファイルから実行（推奨）
+### 画像の自動モザイク処理
 
-- nfsw-mosaic-auto.bat をダブルクリック
-- モザイクパターン選択ダイアログが表示されるので、希望のパターンを選択
-- 画像フォルダ選択ダイアログが表示されるので、処理したい画像フォルダを選択
-- フォルダ内の画像が自動で処理され、元フォルダ名＋「_mc」の新フォルダに保存されます
+1. nsfw-mosaic-image.bat をダブルクリック
+2. モザイクパターン選択ダイアログが表示されるので、希望のパターンを選択
+3. 画像フォルダ選択ダイアログが表示されるので、処理したい画像フォルダを選択
+4. フォルダ内の画像が自動で処理され、元フォルダ名＋「_mc」の新フォルダに保存されます
 
-### 2. コマンドラインから実行
+### 動画の自動モザイク処理
 
-python mosaic-auto.py <画像フォルダのパス>
+1. nsfw-mosaic-video.bat をダブルクリック
+2. 「動画ファイルを選択」または「フォルダ内の全動画を一括処理」を選択
+3. モザイクパターン選択ダイアログが表示されるので、希望のパターンを選択
+4. 選択した動画またはフォルダ内の全動画（mp4/avi/mov）が自動で処理され、元ファイル名＋「_mc」の新ファイルとして保存されます
 
-- フォルダパスを省略すると、GUIでフォルダ選択ダイアログが表示されます
+## 対応形式
 
-## 処理フロー
-
-```mermaid
-flowchart TD
-    Start([開始])
-    SelectPattern["モザイクパターン選択ダイアログ"]
-    SelectFolder["画像フォルダ選択ダイアログ"]
-    ForEach[画像ごとに処理]
-    Detect[YOLOでNSFW領域検出]
-    Apply[Mosaic/Blur/Blackout適用]
-    Save[新フォルダに保存]
-    End([完了])
-
-    Start --> SelectPattern --> SelectFolder --> ForEach
-    ForEach --> Detect --> Apply --> Save
-    Save --> ForEach
-    ForEach --> End
-```
+- 画像: jpg, jpeg, png, gif
+- 動画: mp4, avi, mov
 
 ## 注意事項
 
