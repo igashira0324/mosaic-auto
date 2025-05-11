@@ -159,7 +159,9 @@ def main():
         if not folder:
             print("フォルダが選択されませんでした。処理を中止します。")
             return
-        video_paths = [os.path.join(folder, f) for f in os.listdir(folder) if f.lower().endswith((".mp4", ".avi", ".mov"))]
+        video_paths = [os.path.join(folder, f) for f in os.listdir(folder)
+                      if f.lower().endswith((".mp4", ".avi", ".mov"))
+                      and not (f.lower().endswith("_mc.mp4") or f.lower().endswith("_mc.avi") or f.lower().endswith("_mc.mov"))]
         if not video_paths:
             tkMessageBox.showinfo("動画なし", "選択フォルダに対応動画がありません。", parent=None)
             return
@@ -170,6 +172,7 @@ def main():
     if pattern is None:
         print("キャンセルされました。処理を中止します。")
         return
+    processed_outputs = []  # 追加: 出力ファイルパスを格納
     for video_path in video_paths:
         ext = os.path.splitext(video_path)[1].lower()
         if ext == ".mp4":
@@ -236,8 +239,14 @@ def main():
         status_label.config(text="完了")
         percent_label.config(text="進捗: 100%")
         progress_root.update()
-        tkMessageBox.showinfo("完了", f"全てのフレームの処理が完了しました。\n出力: {out_path}", parent=progress_root)
         progress_root.destroy()
+        processed_outputs.append(out_path)  # 追加: 出力ファイルパスを記録
+    # 通知処理
+    if mode == 'file' and processed_outputs:
+        tkMessageBox.showinfo("完了", f"全てのフレームの処理が完了しました。\n出力: {processed_outputs[0]}")
+    elif mode == 'folder' and processed_outputs:
+        outlist = '\n'.join(processed_outputs)
+        tkMessageBox.showinfo("完了", f"全ての動画の処理が完了しました。\n出力:\n{outlist}")
 
 if __name__ == "__main__":
     main()
